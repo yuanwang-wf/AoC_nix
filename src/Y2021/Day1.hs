@@ -1,4 +1,4 @@
-module Day1 where
+module Y2021.Day1 where
 
 readInput :: FilePath -> IO [Int]
 readInput path = map readNum . lines <$> readFile path
