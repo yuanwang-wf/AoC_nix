@@ -29,14 +29,8 @@
             })
           ];
         };
-        myHaskellEnv = (pkgs.haskellPackages.ghcWithHoogle (p:
-          with p; [
-            aoc
-            cabal-install
-            hlint
-            hpack
-            brittany
-          ]));
+        myHaskellEnv = (pkgs.haskellPackages.ghcWithHoogle
+          (p: with p; [ aoc cabal-install hlint hpack brittany ]));
 
       in {
         packages = { haskell-hello = pkgs.haskell-hello; };
@@ -47,10 +41,13 @@
           imports = [ (pkgs.devshell.extraModulesDir + "/git/hooks.nix") ];
           git.hooks.enable = true;
           git.hooks.pre-commit.text = "${pkgs.treefmt}/bin/treefmt";
-          packages = [ myHaskellEnv
+          packages = [
+            myHaskellEnv
 
             pkgs.ormolu
-                       pkgs.treefmt pkgs.nixfmt ];
+            pkgs.treefmt
+            pkgs.nixfmt
+          ];
         };
       });
 }
