@@ -7,7 +7,7 @@ readInput path = map readNum . lines <$> readFile path
     readNum = read
 
 getNums :: IO [Int]
-getNums = readInput "data/day1.txt"
+getNums = readInput "data/2021/day1.txt"
 
 partI :: IO ()
 partI = do
