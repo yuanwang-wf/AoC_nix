@@ -5,7 +5,6 @@ data-files:
 
 dependencies:
   - base == 4.*
-  - haskell-say
 
 library:
   source-dirs: src
