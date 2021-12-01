@@ -53,7 +53,7 @@ solution = do
 
 solution' :: IO ()
 solution' = do
-  content <- TIO.readFile  "data/day2.txt"
+  content <- TIO.readFile "data/day2.txt"
   print $ foldr (f . fmap validPassword' . parseOnly parseRecord) (0 :: Int) (T.lines content)
   where
     f (Right True) sum = sum + 1

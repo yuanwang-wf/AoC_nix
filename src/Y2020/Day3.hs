@@ -1,5 +1,5 @@
-
 module Y2020.Day3 where
+
 type Grid = [[Bool]]
 
 type Pos = (Int, Int)

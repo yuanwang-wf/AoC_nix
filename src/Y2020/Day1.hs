@@ -1,4 +1,3 @@
-
 module Y2020.Day1 where
 
 import Data.Maybe (fromJust)

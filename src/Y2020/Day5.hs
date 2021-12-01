@@ -1,4 +1,4 @@
-module Y2020.Day5 (partI, partII)  where
+module Y2020.Day5 (partI, partII) where
 
 import Control.Applicative (liftA2)
 import Data.Char (digitToInt)
@@ -39,7 +39,7 @@ findSeat input = head d
 
 partI :: IO SeatId
 partI = do
-  content <- readFile  "/data/2020/day5.txt"
+  content <- readFile "/data/2020/day5.txt"
   return . maxSeat . lines $ content
 
 partII :: IO SeatId
