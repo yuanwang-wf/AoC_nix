@@ -1,4 +1,6 @@
-module Y2021.Day1 where
+module Y2021.Day1 (partI, partII) where
+
+import Y2020.Day2 (solution)
 
 readInput :: FilePath -> IO [Int]
 readInput path = map readNum . lines <$> readFile path
@@ -22,3 +24,6 @@ partII = do
 
 myFold :: [Int] -> Int
 myFold nums = length [i | i <- [0 .. length nums - 4], nums !! i < nums !! (i + 3)]
+
+-- other solutions
+-- zipWith and Command

@@ -40,7 +40,10 @@
           name = "AdventofCode";
           imports = [ (pkgs.devshell.extraModulesDir + "/git/hooks.nix") ];
           git.hooks.enable = true;
-          git.hooks.pre-commit.text = "${pkgs.treefmt}/bin/treefmt";
+          git.hooks.pre-commit.text = ''
+            unset GIT_LITERAL_PATHSPECS
+            ${pkgs.treefmt}/bin/treefmt
+          '';
           packages = [
             myHaskellEnv
 

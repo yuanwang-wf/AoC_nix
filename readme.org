@@ -1,0 +1,6 @@
+#+TITLE: Readme
+
+* Other AoC Haskell repo
+
+- https://github.com/BartoszMilewski/AoC2021
+- https://github.com/mstksg/advent-of-code-2021
