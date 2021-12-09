@@ -4,6 +4,7 @@ data-files:
     - data/*/*.*
 
 dependencies:
+  - array
   - attoparsec
   - base == 4.*
   - bytestring
