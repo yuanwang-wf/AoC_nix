@@ -3,6 +3,13 @@ module Y2021.Day6 (day6PartI) where
 import Control.Monad.State
     ( evalState, MonadState(put, get), State )
 import Data.List.Split (splitOn)
+
+import qualified Data.Map.Strict as Map
+import Control.Monad.ST
+import Data.STRef
+import Control.Monad
+
+
 -- Example use of State monad
 -- Passes a string of dictionary {a,b,c}
 -- Game is to produce a number from the string.
@@ -37,14 +44,15 @@ import Data.List.Split (splitOn)
 -- main = print $ evalState (playGame "abcaaacbbcabbab") startState
 
 
-type FishState = [Int]
-type FishValue = Int
+type FishState = [Integer]
+type FishValue = Integer
 
+data FS = FS { d0 ::Integer, d1:: Integer, d2:: Integer, d3:: Integer, d4 :: Integer, d5 :: Integer, d6 :: Integer, d7 :: Integer, d8 :: Integer }
 
-playGame :: Int -> State FishState FishValue
+playGame :: Integer -> State FishState FishValue
 playGame 0 = do
   fishs <- get
-  pure . length $ fishs
+  pure . toInteger . length $ fishs
 
 playGame n = do
   s <- get
@@ -53,10 +61,10 @@ playGame n = do
 
   where
         day :: FishState -> FishState
-        day  = sum_  . foldr (\n (fs, counter) -> if n == 0 then (fs ++ [6], counter +1) else (fs ++ [n-1], counter))   (([], 0) :: ([Int], Int))
+        day  = sum_  . foldr (\n (fs, counter) -> if n == 0 then (fs ++ [6], counter +1) else (fs ++ [n-1], counter))   (([], 0) :: ([Integer], Integer))
 
-        sum_ :: ([Int], Int) -> [Int]
-        sum_ =  \(fs, counter) -> fs ++ (if counter == 0 then [] else [8| i <- [0.. ( counter -1)] ] :: [Int] )
+        sum_ :: ([Integer], Integer) -> [Integer]
+        sum_ =  \(fs, counter) -> fs ++ (if counter == 0 then [] else [8| i <- [0.. ( counter -1)] ] :: [Integer] )
 
         day_ :: FishState -> FishState
         day_ = foldr (\n fs -> if n == 0 then 6:8:fs else (n-1):fs )  []
@@ -68,7 +76,39 @@ startState = [3,4,3,1,2]
 day6Input :: IO FishState
 day6Input = map read .  splitOn "," <$> readFile "data/2021/day6.txt"
 
-day6PartI :: IO ()
-day6PartI = do
-  state <- day6Input
-  print $ evalState (playGame 256) startState
+-- day6PartI :: IO ()
+-- day6PartI = do
+--   state <- day6Input
+--   print $ evalState (playGame 256) startState
+
+fibST :: Integer -> Integer
+fibST n =
+  if n < 2
+  then n
+  else runST $ do
+    x <- newSTRef 0
+    y <- newSTRef 1
+    fibST' n x y
+  where fibST' 0 x _ = readSTRef x
+        fibST' n x y = do
+          x' <- readSTRef x
+          y' <- readSTRef y
+          writeSTRef x y'
+          writeSTRef y $! (x' + y')
+          fibST' (n-1) x y
+
+fishST :: FishState -> Integer -> FishState
+fishST state day = runST $ do
+  x <- newSTRef state
+  fishST' day x
+  where day_ :: FishState -> FishState
+        day_ = foldr (\n fs -> if n == 0 then 6:8:fs else (n-1):fs )  []
+
+        fishST' 0 x = readSTRef x
+        fishST' n x = do
+          x' <- readSTRef x
+          writeSTRef x $! (day_ x')
+          fishST' (n-1) x
+
+day6PartI :: Int
+day6PartI = length $ fishST startState 256

@@ -12,6 +12,7 @@ dependencies:
   - mtl
   - split
   - text
+  - vector
 
 library:
   source-dirs: src

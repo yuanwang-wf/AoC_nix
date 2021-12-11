@@ -1,8 +1,6 @@
 module Main where
 
-import Y2020.Day6
+import Y2021.Day6 (day6PartI)
 
 main :: IO ()
-main = do
-  num <- partI
-  print num
+main = day6PartI
