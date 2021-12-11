@@ -9,6 +9,7 @@ dependencies:
   - base == 4.*
   - bytestring
   - containers
+  - mtl
   - split
   - text
 
