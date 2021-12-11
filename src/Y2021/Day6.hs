@@ -1,114 +1,54 @@
-module Y2021.Day6 (day6PartI) where
+module Y2021.Day6 (day6PartI, day6PartII  ) where
 
-import Control.Monad.State
-    ( evalState, MonadState(put, get), State )
 import Data.List.Split (splitOn)
 
-import qualified Data.Map.Strict as Map
-import Control.Monad.ST
-import Data.STRef
-import Control.Monad
+import Control.Monad.ST ( runST )
+import Data.STRef ( newSTRef, readSTRef, writeSTRef )
 
 
--- Example use of State monad
--- Passes a string of dictionary {a,b,c}
--- Game is to produce a number from the string.
--- By default the game is off, a C toggles the
--- game on and off. A 'a' gives +1 and a b gives -1.
--- E.g
--- 'ab'    = 0
--- 'ca'    = 1
--- 'cabca' = 0
--- State = game is on or off & current score
---       = (Bool, Int)
-
--- type GameValue = Int
--- type GameState = (Bool, Int)
-
--- playGame :: String -> State GameState GameValue
--- playGame []     = do
---     (_, score) <- get
---     return score
-
--- playGame (x:xs) = do
---     (on, score) <- get
---     case x of
---          'a' | on -> put (on, score + 1)
---          'b' | on -> put (on, score - 1)
---          'c'      -> put (not on, score)
---          _        -> put (on, score)
---     playGame xs
-
--- startState :: (Bool, Int)
--- startState = (False, 0)
--- main = print $ evalState (playGame "abcaaacbbcabbab") startState
 
 
-type FishState = [Integer]
-type FishValue = Integer
+data FS = FS { d0 ::Integer, d1:: Integer, d2:: Integer, d3:: Integer, d4 :: Integer, d5 :: Integer, d6 :: Integer, d7 :: Integer, d8 :: Integer } deriving Show
 
-data FS = FS { d0 ::Integer, d1:: Integer, d2:: Integer, d3:: Integer, d4 :: Integer, d5 :: Integer, d6 :: Integer, d7 :: Integer, d8 :: Integer }
+empty :: FS
+empty = FS 0 0 0 0 0 0 0 0 0
 
-playGame :: Integer -> State FishState FishValue
-playGame 0 = do
-  fishs <- get
-  pure . toInteger . length $ fishs
+value :: FS -> Integer
+value fs = d0 fs + d1 fs + d2 fs + d3 fs + d4 fs + d5 fs + d6 fs + d7 fs + d8 fs
 
-playGame n = do
-  s <- get
-  put (day_ s)
-  playGame (n -1)
+accumFS :: Int -> FS -> FS
+accumFS 0 fs = fs {d0 = d0 fs + 1 }
+accumFS 1 fs = fs {d1 = d1 fs + 1 }
+accumFS 2 fs = fs {d2 = d2 fs + 1 }
+accumFS 3 fs = fs {d3 = d3 fs + 1 }
+accumFS 4 fs = fs {d4 = d4 fs + 1 }
+accumFS 5 fs = fs {d5 = d5 fs + 1 }
+accumFS 6 fs = fs {d6 = d6 fs + 1 }
+accumFS 7 fs = fs {d7 = d7 fs + 1 }
+accumFS _ fs  = fs
 
-  where
-        day :: FishState -> FishState
-        day  = sum_  . foldr (\n (fs, counter) -> if n == 0 then (fs ++ [6], counter +1) else (fs ++ [n-1], counter))   (([], 0) :: ([Integer], Integer))
+startState :: FS
+startState = FS 0 1 1 2 1 0 0 0 0  --[3,4,3,1,2]
 
-        sum_ :: ([Integer], Integer) -> [Integer]
-        sum_ =  \(fs, counter) -> fs ++ (if counter == 0 then [] else [8| i <- [0.. ( counter -1)] ] :: [Integer] )
+shift :: FS -> FS
+shift fs = fs {d0 = d1 fs, d1 = d2 fs, d2 = d3 fs, d3 = d4 fs, d4 = d5 fs, d5 = d6 fs, d6 = d7 fs + d0 fs, d7 = d8 fs, d8 = d0 fs}
 
-        day_ :: FishState -> FishState
-        day_ = foldr (\n fs -> if n == 0 then 6:8:fs else (n-1):fs )  []
+day6Input :: IO FS
+day6Input = foldr (accumFS . (read :: String -> Int)) empty . splitOn "," <$> readFile "data/2021/day6.txt"
 
-
-startState :: FishState
-startState = [3,4,3,1,2]
-
-day6Input :: IO FishState
-day6Input = map read .  splitOn "," <$> readFile "data/2021/day6.txt"
-
--- day6PartI :: IO ()
--- day6PartI = do
---   state <- day6Input
---   print $ evalState (playGame 256) startState
-
-fibST :: Integer -> Integer
-fibST n =
-  if n < 2
-  then n
-  else runST $ do
-    x <- newSTRef 0
-    y <- newSTRef 1
-    fibST' n x y
-  where fibST' 0 x _ = readSTRef x
-        fibST' n x y = do
-          x' <- readSTRef x
-          y' <- readSTRef y
-          writeSTRef x y'
-          writeSTRef y $! (x' + y')
-          fibST' (n-1) x y
-
-fishST :: FishState -> Integer -> FishState
-fishST state day = runST $ do
+fishST :: Integer -> FS -> FS
+fishST day state = runST $ do
   x <- newSTRef state
   fishST' day x
-  where day_ :: FishState -> FishState
-        day_ = foldr (\n fs -> if n == 0 then 6:8:fs else (n-1):fs )  []
-
-        fishST' 0 x = readSTRef x
+  where fishST' 0 x = readSTRef x
         fishST' n x = do
           x' <- readSTRef x
-          writeSTRef x $! (day_ x')
+          writeSTRef x $! shift x'
           fishST' (n-1) x
 
-day6PartI :: Int
-day6PartI = length $ fishST startState 256
+
+day6PartI :: IO Integer
+day6PartI = value . fishST 80 <$> day6Input
+
+day6PartII :: IO Integer
+day6PartII = value . fishST 256 <$> day6Input
