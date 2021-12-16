@@ -35,9 +35,6 @@ day8PartII = sum . map solveD8P2 <$> day8Input
 solveD8P2 :: Entry -> Int
 solveD8P2 = undefined
 
-isSolved :: Mapping -> Entry -> Bool
-isSolved m = all (flip M.member m . S.fromList) . snd
-
 digitMap :: M.Map (S.Set Char) Int
 digitMap =
   M.fromList
@@ -132,20 +129,45 @@ iterateMapOn6 m s = case entryM m s of
 
 iterateMapOn5 :: Mapping -> String -> Mapping
 iterateMapOn5 m s = case entryM m s of
-  ((True, s'), (False, _), (False, _)) -> extendMap $ M.insert (S.fromList s) s' m
-  ((False, _), (True, s'), (False, _)) -> extendMap $ M.insert (S.fromList s) s' m
-  ((False, _), (False, _), (True, s')) -> extendMap $ M.insert (S.fromList s) s' m
+  ((True, s'), (False, _), (False, _)) -> M.insert (S.fromList s) s' m
+  ((False, _), (True, s'), (False, _)) -> M.insert (S.fromList s) s' m
+  ((False, _), (False, _), (True, s')) -> M.insert (S.fromList s) s' m
   _ -> m
   where entryM :: Mapping -> String -> ((Bool, S.Set Char), (Bool, S.Set Char), (Bool, S.Set Char))
         entryM m s = ((canBeTwo m s, S.fromList "acdeg"), (canBeThree m s, S.fromList "acdeg"), (canBeFive m s, S.fromList "abdfg"))
 
 tryToSolve :: Entry -> Mapping
-tryToSolve e = foldr (flip iterateMap) m (fst e)
+tryToSolve e =  foldr (flip iterateMap) m (fst e)
   where m = extendMap $ initMap e
 
+isSolved :: Mapping -> String -> (Bool, Int)
+isSolved m s = case length s of
+  2 -> (True, 1)
+  4 -> (True, 4)
+  3 -> (True, 7)
+  7 -> (True, 8)
+  5 -> case solveOn5 s of
+    ((True, v), (False, _), (False, _)) -> (True, v)
+    ((False, _), (True, v), (False, _)) -> (True, v)
+    ((False, _), (False, _), (True, v)) -> (True, v)
+    _ -> (False, 0)
+
+  6 -> case solveOn6 s of
+    ((True, v), (False, _), (False, _)) -> (True, v)
+    ((False, _), (True, v), (False, _)) -> (True, v)
+    ((False, _), (False, _), (True, v)) -> (True, v)
+    _ -> (False, 0)
+
+  _ -> (False, 0)
+
+  where solveOn5 :: String -> ((Bool, Int), (Bool, Int), (Bool, Int))
+        solveOn5 x = ((canBeTwo m x, 2), (canBeThree m x, 3), (canBeFive m x, 5))
+
+        solveOn6 :: String -> ((Bool, Int), (Bool, Int), (Bool, Int))
+        solveOn6 x = ((canBeZero m x, 0), (canBeSix m x, 6), (canBeNine m x, 9))
 
 debug :: IO ()
 debug = do
   let m = tryToSolve entry
   print m
-  print (isSolved m entry)
+  print $ fmap (\x -> (x, length x, fst (isSolved m x), snd (isSolved m x))) (fst entry)
