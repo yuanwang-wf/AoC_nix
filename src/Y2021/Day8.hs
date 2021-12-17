@@ -1,6 +1,9 @@
 {-# LANGUAGE TupleSections #-}
 
-module Y2021.Day8 (day8PartI, entry, initMap, extendMap, canBeZero, canBeSix, canBeNine, debug) where
+module Y2021.Day8 (day8PartI, entry, initMap,
+                   extendMap, canBeZero, canBeSix, canBeNine,
+                   iterateMap, isSolved,
+                   hasNine) where
 
 import Control.Arrow ((&&&))
 import Data.Bifunctor (bimap)
@@ -22,6 +25,7 @@ readEntry = ((_f . head) &&& (_f . (!! 1))) . splitOn "|"
 
 day8Input :: IO [Entry]
 day8Input = fmap readEntry . lines <$> readFile "data/2021/day8.txt"
+
 
 solveD8P1 :: [Entry] -> Int
 solveD8P1 = length . concatMap (filter (\x -> length x `elem` [2, 3, 4, 7]) . snd)
@@ -75,21 +79,22 @@ entry =
   )
 
 initMap :: Entry -> M.Map (S.Set Char) (S.Set Char)
-initMap = M.fromList . mapMaybe (\x ->  (S.fromList x, ) <$> M.lookup (length x) uniqueMap) . fst
+initMap = M.fromList . mapMaybe (\x -> (S.fromList x,) <$> M.lookup (length x) uniqueMap) . fst
 
 canBe :: Int -> Char -> M.Map (S.Set Char) (S.Set Char) -> String -> Bool
-canBe l c m str = length str == l &&  all (\(_, y) -> c `S.notMember` y)  (filter (\(x,_) -> (s `S.intersection` x) == x )  es)
-  where es = M.assocs m
-        s = S.fromList str
+canBe l c m str = length str == l && all (\(_, y) -> c `S.notMember` y) (filter (\(x, _) -> (s `S.intersection` x) == x) es)
+  where
+    es = M.assocs m
+    s = S.fromList str
 
-canBeZero :: M.Map (S.Set Char) (S.Set Char) -> String -> Bool
+canBeZero :: Mapping -> String -> Bool
 canBeZero = canBe 6 'd'
 
-canBeSix :: M.Map (S.Set Char) (S.Set Char) -> String -> Bool
+canBeSix :: Mapping -> String -> Bool
 canBeSix = canBe 6 'c'
 
-canBeNine :: M.Map (S.Set Char) (S.Set Char) -> String -> Bool
-canBeNine = canBe 6 'e'
+canBeNine :: Mapping -> String -> Bool
+canBeNine m s = not (hasNine m) && canBe 6 'e' m s
 
 canBeTwo :: Mapping -> String -> Bool
 canBeTwo s m = canBe 5 'b' s m && canBe 5 'f' s m
@@ -100,16 +105,23 @@ canBeThree s m = canBe 5 'b' s m && canBe 5 'e' s m
 canBeFive :: Mapping -> String -> Bool
 canBeFive s m = canBe 5 'c' s m && canBe 5 'e' s m
 
+hasNine :: Mapping -> Bool
+hasNine = any (\(x,y) -> y == S.fromList "abcdfg") . M.assocs
+
 -- maybe we need to do fix point
-extendMap :: M.Map (S.Set Char) (S.Set Char) -> M.Map (S.Set Char) (S.Set Char)
-extendMap m = m `M.union` (M.fromList . filter (not . S.null . fst )  ) newEntires
+extendMap ::  Mapping -> Mapping
+extendMap = _extendMap
   where
-    es = M.assocs m
-    newEntires =
-      [ ( fst (es !! i) `S.difference` fst (es !! j) , snd (es !! i) `S.difference` snd (es !! j) )
-        | i <- [0 .. length es - 1],
+  fix f x = let x' = f x in if x == x' then x else fix f x
+  _extendMap :: Mapping -> Mapping
+  _extendMap m = m `M.union` (M.fromList . filter (not . S.null . fst)) newEntires
+    where
+      es = M.assocs m
+      newEntires =
+        [ (fst (es !! i) `S.difference` fst (es !! j), snd (es !! i) `S.difference` snd (es !! j))
+          | i <- [0 .. length es - 1],
           j <- [0 .. length es -1]
-      ]
+        ]
 
 iterateMap :: Mapping -> String -> Mapping
 iterateMap m s = case length s of
@@ -117,15 +129,15 @@ iterateMap m s = case length s of
   5 -> iterateMapOn5 m s
   _ -> m
 
-
 iterateMapOn6 :: Mapping -> String -> Mapping
 iterateMapOn6 m s = case entryM m s of
   ((True, s'), (False, _), (False, _)) -> extendMap $ M.insert (S.fromList s) s' m
   ((False, _), (True, s'), (False, _)) -> extendMap $ M.insert (S.fromList s) s' m
   ((False, _), (False, _), (True, s')) -> extendMap $ M.insert (S.fromList s) s' m
   _ -> m
-  where entryM :: Mapping -> String -> ((Bool, S.Set Char), (Bool, S.Set Char), (Bool, S.Set Char))
-        entryM m s = ((canBeZero m s, S.fromList "abcefg"), (canBeSix m s, S.fromList "abdefg"), (canBeNine m s, S.fromList "abcdfg"))
+  where
+    entryM :: Mapping -> String -> ((Bool, S.Set Char), (Bool, S.Set Char), (Bool, S.Set Char))
+    entryM m s = ((canBeZero m s, S.fromList "abcefg"), (canBeSix m s, S.fromList "abdefg"), (canBeNine m s, S.fromList "abcdfg"))
 
 iterateMapOn5 :: Mapping -> String -> Mapping
 iterateMapOn5 m s = case entryM m s of
@@ -133,12 +145,14 @@ iterateMapOn5 m s = case entryM m s of
   ((False, _), (True, s'), (False, _)) -> M.insert (S.fromList s) s' m
   ((False, _), (False, _), (True, s')) -> M.insert (S.fromList s) s' m
   _ -> m
-  where entryM :: Mapping -> String -> ((Bool, S.Set Char), (Bool, S.Set Char), (Bool, S.Set Char))
-        entryM m s = ((canBeTwo m s, S.fromList "acdeg"), (canBeThree m s, S.fromList "acdeg"), (canBeFive m s, S.fromList "abdfg"))
+  where
+    entryM :: Mapping -> String -> ((Bool, S.Set Char), (Bool, S.Set Char), (Bool, S.Set Char))
+    entryM m s = ((canBeTwo m s, S.fromList "acdeg"), (canBeThree m s, S.fromList "acdeg"), (canBeFive m s, S.fromList "abdfg"))
 
 tryToSolve :: Entry -> Mapping
-tryToSolve e =  foldr (flip iterateMap) m (fst e)
-  where m = extendMap $ initMap e
+tryToSolve e = foldr (flip iterateMap) m (fst e)
+  where
+    m = extendMap $ initMap e
 
 isSolved :: Mapping -> String -> (Bool, Int)
 isSolved m s = case length s of
@@ -151,23 +165,15 @@ isSolved m s = case length s of
     ((False, _), (True, v), (False, _)) -> (True, v)
     ((False, _), (False, _), (True, v)) -> (True, v)
     _ -> (False, 0)
-
   6 -> case solveOn6 s of
     ((True, v), (False, _), (False, _)) -> (True, v)
     ((False, _), (True, v), (False, _)) -> (True, v)
     ((False, _), (False, _), (True, v)) -> (True, v)
     _ -> (False, 0)
-
   _ -> (False, 0)
+  where
+    solveOn5 :: String -> ((Bool, Int), (Bool, Int), (Bool, Int))
+    solveOn5 x = ((canBeTwo m x, 2), (canBeThree m x, 3), (canBeFive m x, 5))
 
-  where solveOn5 :: String -> ((Bool, Int), (Bool, Int), (Bool, Int))
-        solveOn5 x = ((canBeTwo m x, 2), (canBeThree m x, 3), (canBeFive m x, 5))
-
-        solveOn6 :: String -> ((Bool, Int), (Bool, Int), (Bool, Int))
-        solveOn6 x = ((canBeZero m x, 0), (canBeSix m x, 6), (canBeNine m x, 9))
-
-debug :: IO ()
-debug = do
-  let m = tryToSolve entry
-  print m
-  print $ fmap (\x -> (x, length x, fst (isSolved m x), snd (isSolved m x))) (fst entry)
+    solveOn6 :: String -> ((Bool, Int), (Bool, Int), (Bool, Int))
+    solveOn6 x = ((canBeZero m x, 0), (canBeSix m x, 6), (canBeNine m x, 9))
