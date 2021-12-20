@@ -1,9 +1,18 @@
 {-# LANGUAGE TupleSections #-}
 
-module Y2021.Day8 (day8PartI, entry, initMap,
-                   extendMap, canBeZero, canBeSix, canBeNine,
-                   iterateMap, isSolved,
-                   hasNine) where
+module Y2021.Day8
+  ( day8PartI,
+    entry,
+    initMap,
+    extendMap,
+    canBeZero,
+    canBeSix,
+    canBeNine,
+    iterateMap,
+    isSolved,
+    hasNine,
+  )
+where
 
 import Control.Arrow ((&&&))
 import Data.Bifunctor (bimap)
@@ -25,7 +34,6 @@ readEntry = ((_f . head) &&& (_f . (!! 1))) . splitOn "|"
 
 day8Input :: IO [Entry]
 day8Input = fmap readEntry . lines <$> readFile "data/2021/day8.txt"
-
 
 solveD8P1 :: [Entry] -> Int
 solveD8P1 = length . concatMap (filter (\x -> length x `elem` [2, 3, 4, 7]) . snd)
@@ -106,22 +114,22 @@ canBeFive :: Mapping -> String -> Bool
 canBeFive s m = canBe 5 'c' s m && canBe 5 'e' s m
 
 hasNine :: Mapping -> Bool
-hasNine = any (\(x,y) -> y == S.fromList "abcdfg") . M.assocs
+hasNine = any (\(x, y) -> y == S.fromList "abcdfg") . M.assocs
 
 -- maybe we need to do fix point
-extendMap ::  Mapping -> Mapping
+extendMap :: Mapping -> Mapping
 extendMap = _extendMap
   where
-  fix f x = let x' = f x in if x == x' then x else fix f x
-  _extendMap :: Mapping -> Mapping
-  _extendMap m = m `M.union` (M.fromList . filter (not . S.null . fst)) newEntires
-    where
-      es = M.assocs m
-      newEntires =
-        [ (fst (es !! i) `S.difference` fst (es !! j), snd (es !! i) `S.difference` snd (es !! j))
-          | i <- [0 .. length es - 1],
-          j <- [0 .. length es -1]
-        ]
+    fix f x = let x' = f x in if x == x' then x else fix f x
+    _extendMap :: Mapping -> Mapping
+    _extendMap m = m `M.union` (M.fromList . filter (not . S.null . fst)) newEntires
+      where
+        es = M.assocs m
+        newEntires =
+          [ (fst (es !! i) `S.difference` fst (es !! j), snd (es !! i) `S.difference` snd (es !! j))
+            | i <- [0 .. length es - 1],
+              j <- [0 .. length es -1]
+          ]
 
 iterateMap :: Mapping -> String -> Mapping
 iterateMap m s = case length s of

@@ -5,7 +5,7 @@ import qualified Data.Map as M
 import qualified Data.Set as S
 import Test.Hspec
 import Test.QuickCheck
-import Y2021.Day8 (canBeNine, canBeSix, canBeZero, entry, extendMap, initMap, iterateMap, isSolved, hasNine)
+import Y2021.Day8 (canBeNine, canBeSix, canBeZero, entry, extendMap, hasNine, initMap, isSolved, iterateMap)
 
 spec :: Spec
 spec = do
@@ -45,7 +45,7 @@ spec = do
        in (iterateMap m "cefabd") `shouldBe` expectedM
 
     it "next step" $ do
-     let m =
+      let m =
             M.fromList
               [ (S.fromList "ab", S.fromList "cf"),
                 (S.fromList "abcd", S.fromList "acfg"),
@@ -59,4 +59,4 @@ spec = do
                 (S.fromList "d", S.fromList "a"),
                 (S.fromList "ef", S.fromList "bd")
               ]
-     isSolved m "cagedb" `shouldBe` (True, 0)
+      isSolved m "cagedb" `shouldBe` (True, 0)
