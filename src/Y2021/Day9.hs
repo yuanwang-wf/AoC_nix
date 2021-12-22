@@ -1,4 +1,4 @@
-module Y2021.Day9 where
+module Y2021.Day9 (day9PartI, day9PartII) where
 
 import Control.Monad ((<=<))
 import Data.List (sortOn)
