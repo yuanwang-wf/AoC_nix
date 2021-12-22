@@ -3,7 +3,7 @@ module Y2021.Day9 (day9PartI, day9PartII) where
 import Control.Monad ((<=<))
 import Data.List (sortOn)
 import Data.Maybe (catMaybes)
-import Data.Ord (Down(Down))
+import Data.Ord (Down (Down))
 import qualified Data.Set as S
 
 type HeightMap = [[Int]]
@@ -73,12 +73,12 @@ basin m p = helper m (S.singleton p) [p' | p' <- neighbors p m, p' /= p, getValu
     helper :: HeightMap -> S.Set Point -> [Point] -> S.Set Point
     helper m territory [] = territory
     helper m territory frontiers =
-      let   t' = S.union territory (S.fromList frontiers)
-            nF = [ n |p' <- frontiers,  n <- neighbors p' m, S.notMember n  t', getValue n m /= 9]
+      let t' = S.union territory (S.fromList frontiers)
+          nF = [n | p' <- frontiers, n <- neighbors p' m, S.notMember n t', getValue n m /= 9]
        in helper m t' nF
 
 solveDay9PartII :: HeightMap -> Int
-solveDay9PartII m  = product . take 3 .sortOn Down $ [ length (basin m p)   |   p <- lowPoints m]
+solveDay9PartII m = product . take 3 . sortOn Down $ [length (basin m p) | p <- lowPoints m]
 
 -- data Max3 a = Max3 {getLargest :: Maybe a, getSecLargest :: Maybe a, get3rd :: Maybe a} deriving (Eq, Ord, Read, Show, Bounded)
 
