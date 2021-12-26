@@ -43,6 +43,33 @@ testGridStr = unlines ["5483143223",
 testGrid :: Grid
 testGrid = readGrid testGridStr
 
+testStep1 :: Grid
+testStep1 = (readGrid . unlines) ["6594254334",
+                                  "3856965822",
+                                  "6375667284",
+                                  "7252447257",
+                                  "7468496589",
+                                  "5278635756",
+                                  "3287952832",
+                                  "7993992245",
+                                  "5957959665",
+                                  "6394862637"
+                               ]
+
+testStep2 :: Grid
+testStep2 = (readGrid . unlines) ["8807476555",
+                                  "5089087054",
+                                  "8597889608",
+                                  "8485769600",
+                                  "8700908800",
+                                  "6600088989",
+                                  "6800005943",
+                                  "0000007456",
+                                  "9000000876",
+                                  "8700006848"
+                                 ]
+
+
 spec :: Spec
 spec = do
   describe "day 11" $ do
@@ -68,5 +95,6 @@ spec = do
                                            (1,0), (1,2),
                                            (2,0), (2,1), (2,2)]
 
-    it "solve part I" $ do
-      solveDay11PartI testGrid 11 `shouldBe` 204
+    it "step 2" $ do
+      fst (step testGrid)  `shouldBe` testStep1
+      fst (step testStep1)  `shouldBe` testStep2
