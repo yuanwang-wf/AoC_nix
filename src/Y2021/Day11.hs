@@ -6,6 +6,7 @@ import Data.Char (digitToInt)
 import qualified Data.Map as Map
 import Data.Maybe (maybe)
 import qualified Data.Set as Set
+import Control.Monad.Fix (fix)
 
 type Position = (Int, Int)
 
@@ -16,6 +17,23 @@ readGrid = Map.fromList . concatMap (\(x, y) -> [((x, i), digitToInt (y !! i)) |
 
 example :: IO Grid
 example = readGrid <$> readFile "data/2021/day11-test.txt"
+
+-- narrow down
+incr' :: Grid -> Grid
+incr' = fmap (+1)
+
+removeFlash :: Grid -> Maybe Grid
+removeFlash g = if Map.null flashed then Nothing else Just (Map.difference (Map.unionWith (+) increments g ) flashed)
+  where flashed = Map.filter (> 9) g
+        entries = Map.fromListWith (+) [ (p', 1) | p <- Map.keys flashed, p' <- neighbors g p ]
+        increments = Map.intersection entries g
+
+removeFlashFix :: Grid -> Grid
+removeFlashFix g = case removeFlash g of
+  Nothing -> g
+  Just map -> removeFlashFix map
+
+
 
 incr :: Grid -> (Grid, Set.Set Position)
 incr = (\(x, y) -> (Map.fromList x, y)) . foldr (\((x, y), v) (entries, s) -> if v == 9 then (((x, y), 0) : entries, (x, y) `Set.insert` s) else (((x, y), v + 1) : entries, s)) ([], Set.empty) . Map.assocs
@@ -39,6 +57,10 @@ step g = (\(x, y) -> (x, Set.size y)) $ foldr f (g', points) points
     f :: Position -> (Grid, Set.Set Position) -> (Grid, Set.Set Position)
     f p (g'', ps) = let (g''', ps') = flash g'' p in (g''', ps' `Set.union` ps)
     (g', points) = incr g
+
+step' :: Grid -> (Grid, Int)
+step' g = (Map.union g' (fmap (const 0) g), (Map.size g) - (Map.size g'))
+  where g' = removeFlashFix (incr' g)
 
 neighbors :: Grid -> Position -> [Position]
 neighbors g (x, y) =

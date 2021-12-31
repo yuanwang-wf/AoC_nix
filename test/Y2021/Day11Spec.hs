@@ -4,7 +4,7 @@ import qualified Data.Map as M
 import qualified Data.Set as S
 import Test.Hspec
 import Y2021.Day10 (solveDay10PartI)
-import Y2021.Day11 (Grid, Position, flash, incr, neighbors, readGrid, solveDay11PartI, step)
+import Y2021.Day11 (Grid, Position, flash, incr, neighbors, readGrid, solveDay11PartI, step, step')
 
 day0 :: String
 day0 = unlines ["11111", "19991", "19191", "19991", "11111"]
@@ -179,5 +179,5 @@ spec = do
                    ]
 
     it "step 2" $ do
-      fst (step testGrid) `shouldBe` testStep1
-      fst (step testStep1) `shouldBe` testStep2
+      fst (step' testGrid) `shouldBe` testStep1
+      fst (step' testStep1) `shouldBe` testStep2
