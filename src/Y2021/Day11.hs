@@ -18,6 +18,10 @@ readGrid = Map.fromList . concatMap (\(x, y) -> [((x, i), digitToInt (y !! i)) |
 example :: IO Grid
 example = readGrid <$> readFile "data/2021/day11-test.txt"
 
+realGrid :: IO Grid
+realGrid = readGrid <$> readFile "data/2021/day11.txt"
+
+
 -- narrow down
 incr' :: Grid -> Grid
 incr' = fmap (+1)
@@ -28,6 +32,7 @@ removeFlash g = if Map.null flashed then Nothing else Just (Map.difference (Map.
         entries = Map.fromListWith (+) [ (p', 1) | p <- Map.keys flashed, p' <- neighbors g p ]
         increments = Map.intersection entries g
 
+-- why fix point won't work
 removeFlashFix :: Grid -> Grid
 removeFlashFix g = case removeFlash g of
   Nothing -> g
@@ -76,9 +81,23 @@ neighbors g (x, y) =
       (x + 1, y + 1)
     ]
 
+-- could rewrite as unfold
 solveDay11PartI :: Grid -> Int -> Int
 solveDay11PartI g s = helper g s 0
   where
     helper :: Grid -> Int -> Int -> Int
     helper g 0 count = count
-    helper g n count = let (g', c') = step g in helper g' (n -1) (count + c')
+    helper g n count = let (g', c') = step' g in helper g' (n -1) (count + c')
+
+day11PartI :: IO Int
+day11PartI = (`solveDay11PartI` 100) <$> realGrid
+
+solveDay11PartII :: Grid -> Int
+solveDay11PartII g = helper g 0
+  where
+    helper :: Grid -> Int -> Int
+    helper g n = let (g', c) = step' g in if c == Map.size g then (n+1) else helper g' (n+1)
+
+
+day11PartII :: IO Int
+day11PartII = solveDay11PartII  <$> realGrid
