@@ -1,7 +1,5 @@
 module Y2021.Day1 (partI, partII) where
 
-import Y2020.Day2 (solution)
-
 readInput :: FilePath -> IO [Int]
 readInput path = map readNum . lines <$> readFile path
   where
