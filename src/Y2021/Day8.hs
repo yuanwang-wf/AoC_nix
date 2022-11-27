@@ -14,7 +14,6 @@ module Y2021.Day8 (
 ) where
 
 import Control.Arrow ((&&&))
-import Data.Bifunctor (bimap)
 import Data.List.Split (splitOn)
 import Data.Map qualified as M
 import Data.Maybe (mapMaybe)
@@ -40,26 +39,27 @@ solveD8P1 = length . concatMap (filter (\x -> length x `elem` [2, 3, 4, 7]) . sn
 day8PartI :: IO Int
 day8PartI = solveD8P1 <$> day8Input
 
-day8PartII :: IO Int
-day8PartII = sum . map solveD8P2 <$> day8Input
+-- solveD8P2 :: Entry -> Int
+-- solveD8P2 = undefined
 
-solveD8P2 :: Entry -> Int
-solveD8P2 = undefined
+-- day8PartII :: IO Int
+-- day8PartII = sum . map solveD8P2 <$> day8Input
 
-digitMap :: M.Map (S.Set Char) Int
-digitMap =
-    M.fromList
-        [ (S.fromList "abcefg", 0)
-        , (S.fromList "cf", 1)
-        , (S.fromList "acdeg", 2)
-        , (S.fromList "acdfg", 3)
-        , (S.fromList "bcdf", 4)
-        , (S.fromList "abdfg", 5)
-        , (S.fromList "abdefg", 6)
-        , (S.fromList "acf", 7)
-        , (S.fromList "abcdefg", 8)
-        , (S.fromList "abcdfg", 9)
-        ]
+
+-- digitMap :: M.Map (S.Set Char) Int
+-- digitMap =
+--     M.fromList
+--         [ (S.fromList "abcefg", 0)
+--         , (S.fromList "cf", 1)
+--         , (S.fromList "acdeg", 2)
+--         , (S.fromList "acdfg", 3)
+--         , (S.fromList "bcdf", 4)
+--         , (S.fromList "abdfg", 5)
+--         , (S.fromList "abdefg", 6)
+--         , (S.fromList "acf", 7)
+--         , (S.fromList "abcdefg", 8)
+--         , (S.fromList "abcdfg", 9)
+--         ]
 
 uniqueMap :: M.Map Int (S.Set Char)
 uniqueMap =
@@ -114,13 +114,13 @@ canBeFive :: Mapping -> String -> Bool
 canBeFive s m = canBe 5 'c' s m && canBe 5 'e' s m
 
 hasNine :: Mapping -> Bool
-hasNine = any (\(x, y) -> y == S.fromList "abcdfg") . M.assocs
+hasNine = any (\(_, y) -> y == S.fromList "abcdfg") . M.assocs
 
 -- maybe we need to do fix point
 extendMap :: Mapping -> Mapping
 extendMap = _extendMap
   where
-    fix f x = let x' = f x in if x == x' then x else fix f x
+    -- fix f x = let x' = f x in if x == x' then x else fix f x
     _extendMap :: Mapping -> Mapping
     _extendMap m = m `M.union` (M.fromList . filter (not . S.null . fst)) newEntires
       where
@@ -145,7 +145,7 @@ iterateMapOn6 m s = case entryM m s of
     _ -> m
   where
     entryM :: Mapping -> String -> ((Bool, S.Set Char), (Bool, S.Set Char), (Bool, S.Set Char))
-    entryM m s = ((canBeZero m s, S.fromList "abcefg"), (canBeSix m s, S.fromList "abdefg"), (canBeNine m s, S.fromList "abcdfg"))
+    entryM m' s' = ((canBeZero m' s', S.fromList "abcefg"), (canBeSix m' s', S.fromList "abdefg"), (canBeNine m' s', S.fromList "abcdfg"))
 
 iterateMapOn5 :: Mapping -> String -> Mapping
 iterateMapOn5 m s = case entryM m s of
@@ -155,12 +155,12 @@ iterateMapOn5 m s = case entryM m s of
     _ -> m
   where
     entryM :: Mapping -> String -> ((Bool, S.Set Char), (Bool, S.Set Char), (Bool, S.Set Char))
-    entryM m s = ((canBeTwo m s, S.fromList "acdeg"), (canBeThree m s, S.fromList "acdeg"), (canBeFive m s, S.fromList "abdfg"))
+    entryM m' s' = ((canBeTwo m' s', S.fromList "acdeg"), (canBeThree m' s', S.fromList "acdeg"), (canBeFive m' s', S.fromList "abdfg"))
 
-tryToSolve :: Entry -> Mapping
-tryToSolve e = foldr (flip iterateMap) m (fst e)
-  where
-    m = extendMap $ initMap e
+-- tryToSolve :: Entry -> Mapping
+-- tryToSolve e = foldr (flip iterateMap) m (fst e)
+--   where
+--     m = extendMap $ initMap e
 
 isSolved :: Mapping -> String -> (Bool, Int)
 isSolved m s = case length s of

@@ -1,7 +1,7 @@
 module Y2020.Day1 where
 
 import Data.Maybe (fromJust)
-import qualified Data.Set as Set
+import Data.Set qualified as Set
 
 -- https://adventofcode.com/2020/day/1
 -- Specifically, they need you to find the two entries that sum to 2020 and then multiply those two numbers together.

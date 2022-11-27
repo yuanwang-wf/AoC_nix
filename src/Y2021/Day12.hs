@@ -2,8 +2,8 @@ module Y2021.Day12 where
 
 import Data.Char (isLower)
 import Data.Map (Map)
-import qualified Data.Map  as Map
-import qualified Data.Set  as Set
+import Data.Map qualified as Map
+import Data.Set qualified as Set
 
 type Node = String
 

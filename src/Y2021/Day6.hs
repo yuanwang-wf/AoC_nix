@@ -4,7 +4,7 @@ import Control.Monad.ST (runST)
 import Data.List.Split (splitOn)
 import Data.STRef (newSTRef, readSTRef, writeSTRef)
 
-data FS = FS {d0 :: Integer, d1 :: Integer, d2 :: Integer, d3 :: Integer, d4 :: Integer, d5 :: Integer, d6 :: Integer, d7 :: Integer, d8 :: Integer} deriving (Show)
+data FS = FS {d0 :: Integer, d1 :: Integer, d2 :: Integer, d3 :: Integer, d4 :: Integer, d5 :: Integer, d6 :: Integer, d7 :: Integer, d8 :: Integer}
 
 empty :: FS
 empty = FS 0 0 0 0 0 0 0 0 0
@@ -23,8 +23,8 @@ accumFS 6 fs = fs{d6 = d6 fs + 1}
 accumFS 7 fs = fs{d7 = d7 fs + 1}
 accumFS _ fs = fs
 
-startState :: FS
-startState = FS 0 1 1 2 1 0 0 0 0 --[3,4,3,1,2]
+-- startState :: FS
+-- startState = FS 0 1 1 2 1 0 0 0 0 --[3,4,3,1,2]
 
 shift :: FS -> FS
 shift fs = fs{d0 = d1 fs, d1 = d2 fs, d2 = d3 fs, d3 = d4 fs, d4 = d5 fs, d5 = d6 fs, d6 = d7 fs + d0 fs, d7 = d8 fs, d8 = d0 fs}

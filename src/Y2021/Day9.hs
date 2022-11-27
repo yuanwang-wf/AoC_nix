@@ -71,11 +71,11 @@ basin :: HeightMap -> Point -> S.Set Point
 basin m p = helper m (S.singleton p) [p' | p' <- neighbors p m, p' /= p, getValue p' m /= 9]
   where
     helper :: HeightMap -> S.Set Point -> [Point] -> S.Set Point
-    helper m territory [] = territory
-    helper m territory frontiers =
+    helper _    territory [] = territory
+    helper m' territory frontiers =
         let t' = S.union territory (S.fromList frontiers)
-            nF = [n | p' <- frontiers, n <- neighbors p' m, S.notMember n t', getValue n m /= 9]
-         in helper m t' nF
+            nF = [n | p' <- frontiers, n <- neighbors p' m', S.notMember n t', getValue n m' /= 9]
+         in helper m' t' nF
 
 solveDay9PartII :: HeightMap -> Int
 solveDay9PartII m = product . take 3 . sortOn Down $ [length (basin m p) | p <- lowPoints m]

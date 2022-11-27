@@ -14,14 +14,14 @@ median x =
   where
     n = length x
 
-findCost :: Int -> [Int] -> Int
-findCost num = sum . fmap (abs . (-) num)
+-- findCost :: Int -> [Int] -> Int
+-- findCost num = sum . fmap (abs . (-) num)
 
 findCost' :: Int -> [Int] -> Int
 findCost' num = sum . fmap ((\x -> (x * (x + 1)) `div` 2) . (abs . (-) num))
 
-findAllCost :: [Int] -> [Int]
-findAllCost nums = fmap (`findCost` nums) [0 .. maximum nums]
+-- findAllCost :: [Int] -> [Int]
+-- findAllCost nums = fmap (`findCost` nums) [0 .. maximum nums]
 
 findAllCost' :: [Int] -> [Int]
 findAllCost' nums = fmap (`findCost'` nums) [0 .. maximum nums]

@@ -1,11 +1,10 @@
 module Y2021.Day5 (day5PartII, day5PartI) where
 
 import Control.Arrow ((&&&))
-import Control.Monad (join)
 import Data.Array (Array, array, elems, (!), (//))
 import Data.Bits (Bits (xor))
 import Data.List.Split (splitOn)
-import qualified Data.Map.Strict  as Map
+import Data.Map.Strict qualified as Map
 
 type Point = (Int, Int)
 
@@ -24,21 +23,7 @@ grid :: Array (Int, Int) Int
 grid = array ((0, 0), (999, 999)) [((i, j), 0) | i <- [0 .. 999], j <- [0 .. 999]]
 
 updateGrid :: Array (Int, Int) Int -> Point -> Point -> Array (Int, Int) Int
-updateGrid grid (a, b) (a', b') = grid // [((i, j), 1 + (grid ! (i, j))) | i <- [a .. a'], j <- [b .. b']]
-
-testVent :: [Vent]
-testVent =
-    [ ((0, 9), (5, 9))
-    , ((8, 0), (0, 8))
-    , ((9, 4), (3, 4))
-    , ((2, 2), (2, 1))
-    , ((7, 0), (7, 4))
-    , ((6, 4), (2, 0))
-    , ((0, 9), (2, 9))
-    , ((3, 4), (1, 4))
-    , ((0, 0), (8, 8))
-    , ((5, 5), (8, 2))
-    ]
+updateGrid g (a, b) (a', b') = g // [((i, j), 1 + (g ! (i, j))) | i <- [a .. a'], j <- [b .. b']]
 
 partI :: [Vent] -> Int
 partI = length . filter (>= 2) . elems . foldr (f . _sort) grid . _filter
@@ -59,7 +44,7 @@ day5PartI = partI <$> content
     content = map readVent . lines <$> readFile "data/2021/day5.txt"
 
 range :: (Point, Point) -> [Point]
-range a = if isNotDiagonal a then (straightRange . _sortS) a else (if isDiagonal a then (diagonalRange . _sortD) a else []) -- if possible to rewrite it with alernative
+range x = if isNotDiagonal x then (straightRange . _sortS) x else (if isDiagonal x then (diagonalRange . _sortD) x else []) -- if possible to rewrite it with alernative
   where
     isNotDiagonal :: (Point, Point) -> Bool
     isNotDiagonal = \((a, b), (a', b')) -> (a == a') `xor` (b == b')
@@ -74,10 +59,10 @@ range a = if isNotDiagonal a then (straightRange . _sortS) a else (if isDiagonal
     _sortD ((a, b), (a', b')) = if a > a' then ((a', b'), (a, b)) else ((a, b), (a', b'))
 
     straightRange :: (Point, Point) -> [Point]
-    straightRange ((a, b), (a', b')) = [(i, j) | i <- [a .. a'], j <- [b .. b']]
+    straightRange ((a', b), (a'', b')) = [(i, j) | i <- [a' .. a''], j <- [b .. b']]
 
     diagonalRange :: (Point, Point) -> [Point]
-    diagonalRange ((a, b), (a', b')) = let o = if b > b' then (-) else (+) in [(a + i, b `o` i) | i <- [0 .. (a' - a)]]
+    diagonalRange ((a', b), (a'', b')) = let o = if b > b' then (-) else (+) in [(a'' + i, b `o` i) | i <- [0 .. (a' - a'')]]
 
 -- take me a while to relaized how bad is this method
 -- we are updating grid too many times, and we do not need 1000*1000 grid to begin with

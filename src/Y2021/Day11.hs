@@ -3,9 +3,9 @@ module Y2021.Day11 where
 import Control.Monad (liftM, (<=<))
 import Control.Monad.Fix (fix)
 import Data.Char (digitToInt)
-import qualified Data.Map  as Map
+import Data.Map qualified as Map
 import Data.Maybe (maybe)
-import qualified Data.Set  as Set
+import Data.Set qualified as Set
 
 type Position = (Int, Int)
 

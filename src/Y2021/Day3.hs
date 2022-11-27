@@ -24,10 +24,10 @@ testInput =
     ]
 
 findGamma :: [String] -> String
-findGamma xs = [if sum i > 0 then '1' else '0' | i <- [0 .. (length . head $ xs) - 1]]
+findGamma xs = [if sum' i > 0 then '1' else '0' | i <- [0 .. (length . head $ xs) - 1]]
   where
-    sum :: Int -> Int
-    sum i = foldr (\c a -> if c == '0' then a - 1 else a + 1) 0 (map (\x -> x !! i) xs)
+    sum' :: Int -> Int
+    sum' i = foldr (\c a -> if c == '0' then a - 1 else a + 1) 0 (map (\x -> x !! i) xs)
 
 findEpsilon :: [String] -> String
 findEpsilon = map (\c -> if c == '1' then '0' else '1') . findGamma

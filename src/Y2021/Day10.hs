@@ -2,7 +2,7 @@ module Y2021.Day10 where
 
 import Data.Either (rights)
 import Data.List (sort)
-import qualified Data.Map  as Map
+import Data.Map qualified as Map
 import Data.Maybe (fromJust, fromMaybe, isJust)
 
 lookupM :: Map.Map Char Char

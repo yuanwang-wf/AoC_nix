@@ -38,17 +38,17 @@ move :: Int -> [Grid] -> [Grid]
 move num = (fmap . fmap . fmap) (go num)
   where
     go :: Int -> Pos -> Pos
-    go num (x, y) = if num == x then (x, True) else (x, y)
+    go num' (x, y) = if num' == x then (x, True) else (x, y)
 
 findScore :: [Int] -> [Grid] -> Maybe Int
-findScore [] grids = Nothing
+findScore [] _  = Nothing
 findScore (x : xs) grids = if null winGrids then findScore xs grids' else Just (x * sumOfUnMarked (head winGrids))
   where
     grids' = move x grids
     winGrids = filter isWin grids'
 
 findLastScore :: [Int] -> [Grid] -> Maybe Int
-findLastScore [] grids = Nothing
+findLastScore [] _ = Nothing
 findLastScore (x : xs) [grid] = if (isWin . head) (move x [grid]) then (Just . (* x) . sumOfUnMarked . head) $ move x [grid] else findLastScore xs $ move x [grid]
 findLastScore (x : xs) grids = if null winGrids then findLastScore xs grids' else findLastScore xs $ filter (not . isWin) grids'
   where
