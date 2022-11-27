@@ -12,7 +12,7 @@ getNums = readInput "data/2021/day1.txt"
 partI :: IO ()
 partI = do
     nums <- getNums
-    let m = fst $ foldl (\(counter, prev) num -> (counter + if maybe False (< num) prev then 1 else 0, Just num)) (0, Nothing) nums
+    let m = fst $ foldl (\(counter, prev) num -> (counter + if maybe False (< num) prev then 1 else 0, Just num)) (0, Nothing) nums :: Int
     print m
 
 partII :: IO ()
