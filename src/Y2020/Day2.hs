@@ -4,8 +4,8 @@ module Y2020.Day2 where
 
 import Control.Applicative (Alternative (many))
 import Data.Attoparsec.Text
-import Data.Text qualified as T
-import Data.Text.IO qualified as TIO
+import qualified Data.Text  as T
+import qualified Data.Text.IO  as TIO
 
 -- We need a parser to parse password policy
 -- 1-3 a: abcde

@@ -4,7 +4,7 @@ module Y2020.Day6 (
 ) where
 
 import Data.List.Split (splitOn)
-import Data.Set qualified as Set
+import qualified Data.Set  as Set
 import GHC.Base (join)
 
 getInput :: IO [String]

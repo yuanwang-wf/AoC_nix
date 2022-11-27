@@ -5,7 +5,7 @@ import Control.Monad (join)
 import Data.Array (Array, array, elems, (!), (//))
 import Data.Bits (Bits (xor))
 import Data.List.Split (splitOn)
-import Data.Map.Strict qualified as Map
+import qualified Data.Map.Strict  as Map
 
 type Point = (Int, Int)
 
