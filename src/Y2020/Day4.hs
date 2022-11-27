@@ -26,15 +26,15 @@ data Passport = Passport {byr :: Maybe Byr, iyr :: Maybe Iyr, eyr :: Maybe Eyr, 
 
 parsePart :: String -> Passport -> Passport
 parsePart ctn p = case splitOn ":" ctn of
-  ["byr", x] -> p {byr = if validByr x then Just (Byr x) else Nothing}
-  ["iyr", x] -> p {iyr = if validIyr x then Just (Iyr x) else Nothing}
-  ["eyr", x] -> p {eyr = if validEyr x then Just (Eyr x) else Nothing}
-  ["hgt", x] -> p {hgt = if validHgt x then Just (Hgt x) else Nothing}
-  ["hcl", x] -> p {hcl = if validHcl x then Just (Hcl x) else Nothing}
-  ["ecl", x] -> p {ecl = if validEcl x then Just (Ecl x) else Nothing}
-  ["pid", x] -> p {pid = if validPid x then Just (Pid x) else Nothing}
-  ["cid", x] -> p {cid = Just (Cid x)}
-  _ -> p
+    ["byr", x] -> p{byr = if validByr x then Just (Byr x) else Nothing}
+    ["iyr", x] -> p{iyr = if validIyr x then Just (Iyr x) else Nothing}
+    ["eyr", x] -> p{eyr = if validEyr x then Just (Eyr x) else Nothing}
+    ["hgt", x] -> p{hgt = if validHgt x then Just (Hgt x) else Nothing}
+    ["hcl", x] -> p{hcl = if validHcl x then Just (Hcl x) else Nothing}
+    ["ecl", x] -> p{ecl = if validEcl x then Just (Ecl x) else Nothing}
+    ["pid", x] -> p{pid = if validPid x then Just (Pid x) else Nothing}
+    ["cid", x] -> p{cid = Just (Cid x)}
+    _ -> p
 
 validIntWithBound :: Int -> Int -> String -> Bool
 validIntWithBound min max content = isJust ((readMaybe content :: Maybe Int) >>= (\v -> if v >= min && v <= max then Just v else Nothing))
@@ -81,10 +81,10 @@ isValid p = foldr (\f v -> f p && v) True ([isJust . byr, isJust . iyr, isJust .
 
 getPassport :: IO [Passport]
 getPassport = do
-  content <- readFile "data/2020/day4.txt"
-  return (parsePassports content)
+    content <- readFile "data/2020/day4.txt"
+    return (parsePassports content)
 
 test :: IO ()
 test = do
-  passports <- getPassport
-  print $ foldr (\p sum -> if isValid p then sum + 1 else sum) (0 :: Int) passports
+    passports <- getPassport
+    print $ foldr (\p sum -> if isValid p then sum + 1 else sum) (0 :: Int) passports

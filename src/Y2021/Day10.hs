@@ -1,9 +1,8 @@
--- |
 module Y2021.Day10 where
 
 import Data.Either (rights)
 import Data.List (sort)
-import qualified Data.Map as Map
+import Data.Map qualified as Map
 import Data.Maybe (fromJust, fromMaybe, isJust)
 
 lookupM :: Map.Map Char Char
@@ -15,9 +14,9 @@ illegalCharacter = helper []
     helper :: String -> String -> Maybe Char
     helper _ [] = Nothing
     helper leftC (x : xs)
-      | Map.member x lookupM = helper (x : leftC) xs
-      | null leftC || Map.lookup (head leftC) lookupM /= Just x = Just x
-      | otherwise = helper (tail leftC) xs
+        | Map.member x lookupM = helper (x : leftC) xs
+        | null leftC || Map.lookup (head leftC) lookupM /= Just x = Just x
+        | otherwise = helper (tail leftC) xs
 
 pointMap :: Map.Map Char Int
 pointMap = Map.fromList [(')', 3), (']', 57), ('}', 1197), ('>', 25137)]
@@ -40,9 +39,9 @@ illegalCharacter' = helper []
     helper :: String -> String -> Either Char String
     helper leftC [] = Right leftC
     helper leftC (x : xs)
-      | Map.member x lookupM = helper (x : leftC) xs
-      | null leftC || Map.lookup (head leftC) lookupM /= Just x = Left x
-      | otherwise = helper (tail leftC) xs
+        | Map.member x lookupM = helper (x : leftC) xs
+        | null leftC || Map.lookup (head leftC) lookupM /= Just x = Left x
+        | otherwise = helper (tail leftC) xs
 
 solveDay10PartII :: String -> Int
 solveDay10PartII = median . fmap (agg . autocomplete) . rights . fmap illegalCharacter' . lines

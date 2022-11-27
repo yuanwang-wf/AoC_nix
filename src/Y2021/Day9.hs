@@ -4,7 +4,7 @@ import Control.Monad ((<=<))
 import Data.List (sortOn)
 import Data.Maybe (catMaybes)
 import Data.Ord (Down (Down))
-import qualified Data.Set as S
+import Data.Set qualified as S
 
 type HeightMap = [[Int]]
 
@@ -20,13 +20,13 @@ adjPoint :: Int -> Int -> HeightMap -> [Int]
 adjPoint x y m = catMaybes [up, left, down, right]
   where
     up :: Maybe Int
-    up = if x == 0 then Nothing else Just (m !! (x -1) !! y)
+    up = if x == 0 then Nothing else Just (m !! (x - 1) !! y)
 
     down :: Maybe Int
     down = if x == max_raw then Nothing else Just (m !! (x + 1) !! y)
 
     left :: Maybe Int
-    left = if y == 0 then Nothing else Just (m !! x !! (y -1))
+    left = if y == 0 then Nothing else Just (m !! x !! (y - 1))
 
     right :: Maybe Int
     right = if y == max_col then Nothing else Just (m !! x !! (y + 1))
@@ -36,8 +36,8 @@ adjPoint x y m = catMaybes [up, left, down, right]
 
 lowPoints :: HeightMap -> [Point]
 lowPoints m =
-  [ (x, y) | x <- [0 .. max_raw], y <- [0 .. max_col], all (> m !! x !! y) (adjPoint x y m)
-  ]
+    [ (x, y) | x <- [0 .. max_raw], y <- [0 .. max_col], all (> m !! x !! y) (adjPoint x y m)
+    ]
   where
     max_col = (length . head) m - 1
     max_raw = length m - 1
@@ -49,13 +49,13 @@ neighbors :: Point -> HeightMap -> [Point]
 neighbors (x, y) m = catMaybes [up, left, down, right]
   where
     up :: Maybe Point
-    up = if x == 0 then Nothing else Just (x -1, y)
+    up = if x == 0 then Nothing else Just (x - 1, y)
 
     down :: Maybe Point
     down = if x == max_raw then Nothing else Just (x + 1, y)
 
     left :: Maybe Point
-    left = if y == 0 then Nothing else Just (x, y -1)
+    left = if y == 0 then Nothing else Just (x, y - 1)
 
     right :: Maybe Point
     right = if y == max_col then Nothing else Just (x, y + 1)
@@ -73,9 +73,9 @@ basin m p = helper m (S.singleton p) [p' | p' <- neighbors p m, p' /= p, getValu
     helper :: HeightMap -> S.Set Point -> [Point] -> S.Set Point
     helper m territory [] = territory
     helper m territory frontiers =
-      let t' = S.union territory (S.fromList frontiers)
-          nF = [n | p' <- frontiers, n <- neighbors p' m, S.notMember n t', getValue n m /= 9]
-       in helper m t' nF
+        let t' = S.union territory (S.fromList frontiers)
+            nF = [n | p' <- frontiers, n <- neighbors p' m, S.notMember n t', getValue n m /= 9]
+         in helper m t' nF
 
 solveDay9PartII :: HeightMap -> Int
 solveDay9PartII m = product . take 3 . sortOn Down $ [length (basin m p) | p <- lowPoints m]

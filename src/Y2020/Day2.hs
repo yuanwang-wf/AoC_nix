@@ -4,8 +4,8 @@ module Y2020.Day2 where
 
 import Control.Applicative (Alternative (many))
 import Data.Attoparsec.Text
-import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
+import Data.Text qualified as T
+import Data.Text.IO qualified as TIO
 
 -- We need a parser to parse password policy
 -- 1-3 a: abcde
@@ -27,14 +27,14 @@ validPassword' (PWRecord c' l r w) = f w l c' /= f w r c'
 
 parseRecord :: Parser PWRecord
 parseRecord =
-  do
-    minLength <- decimal
-    char '-'
-    maxLength <- decimal
-    char ' '
-    c <- anyChar
-    string ": "
-    PWRecord c minLength maxLength <$> takeText
+    do
+        minLength <- decimal
+        char '-'
+        maxLength <- decimal
+        char ' '
+        c <- anyChar
+        string ": "
+        PWRecord c minLength maxLength <$> takeText
 
 -- TODO implement this correctly
 --recordParser :: Parser [PWRecord]
@@ -45,16 +45,16 @@ parseRecord =
 
 solution :: IO ()
 solution = do
-  content <- TIO.readFile "data/2020/day2.txt"
-  print $ foldr (f . fmap validPassword . parseOnly parseRecord) (0 :: Int) (T.lines content)
+    content <- TIO.readFile "data/2020/day2.txt"
+    print $ foldr (f . fmap validPassword . parseOnly parseRecord) (0 :: Int) (T.lines content)
   where
     f (Right True) sum = sum + 1
     f _ sum = sum
 
 solution' :: IO ()
 solution' = do
-  content <- TIO.readFile "data/day2.txt"
-  print $ foldr (f . fmap validPassword' . parseOnly parseRecord) (0 :: Int) (T.lines content)
+    content <- TIO.readFile "data/day2.txt"
+    print $ foldr (f . fmap validPassword' . parseOnly parseRecord) (0 :: Int) (T.lines content)
   where
     f (Right True) sum = sum + 1
     f _ sum = sum

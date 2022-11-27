@@ -1,16 +1,15 @@
-module Y2020.Day6
-  ( partI,
+module Y2020.Day6 (
+    partI,
     partII,
-  )
-where
+) where
 
 import Data.List.Split (splitOn)
-import qualified Data.Set as Set
+import Data.Set qualified as Set
 import GHC.Base (join)
 
 getInput :: IO [String]
 getInput = do
-  fmap (splitOn "\n\n") $ readFile "data/2020/day6.txt"
+    fmap (splitOn "\n\n") $ readFile "data/2020/day6.txt"
 
 getGroupAnswer :: String -> Set.Set Char
 getGroupAnswer = foldr Set.insert Set.empty . join . lines

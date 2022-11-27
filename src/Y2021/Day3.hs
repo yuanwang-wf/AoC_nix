@@ -9,22 +9,22 @@ getDay3Input = lines <$> readFile "data/2021/day3.txt"
 
 testInput :: [String]
 testInput =
-  [ "00100",
-    "11110",
-    "10110",
-    "10111",
-    "10101",
-    "01111",
-    "00111",
-    "11100",
-    "10000",
-    "11001",
-    "00010",
-    "01010"
-  ]
+    [ "00100"
+    , "11110"
+    , "10110"
+    , "10111"
+    , "10101"
+    , "01111"
+    , "00111"
+    , "11100"
+    , "10000"
+    , "11001"
+    , "00010"
+    , "01010"
+    ]
 
 findGamma :: [String] -> String
-findGamma xs = [if sum i > 0 then '1' else '0' | i <- [0 .. (length . head $ xs) -1]]
+findGamma xs = [if sum i > 0 then '1' else '0' | i <- [0 .. (length . head $ xs) - 1]]
   where
     sum :: Int -> Int
     sum i = foldr (\c a -> if c == '0' then a - 1 else a + 1) 0 (map (\x -> x !! i) xs)
@@ -46,17 +46,17 @@ day3PartI = day3PartIPure <$> getDay3Input
 
 day3PartII :: IO Int
 day3PartII = do
-  codes <- getDay3Input
-  let oRating = readBin $ splitBy 0 codes (\x y -> length x >= length y)
-      coRating = readBin $ splitBy 0 codes (\x y -> length x < length y) --why not <=
-  pure (oRating * coRating)
+    codes <- getDay3Input
+    let oRating = readBin $ splitBy 0 codes (\x y -> length x >= length y)
+        coRating = readBin $ splitBy 0 codes (\x y -> length x < length y) --why not <=
+    pure (oRating * coRating)
 
 splitBy :: Int -> [String] -> ([String] -> [String] -> Bool) -> String
 splitBy i [x] fn = x
 splitBy i xs fn =
-  if fn ones zeros
-    then splitBy (i + 1) ones fn
-    else splitBy (i + 1) zeros fn
+    if fn ones zeros
+        then splitBy (i + 1) ones fn
+        else splitBy (i + 1) zeros fn
   where
     (ones, zeros) = _splitBy i xs
 

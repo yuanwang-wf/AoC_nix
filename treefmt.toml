@@ -1,8 +1,21 @@
+[formatter.haskell]
+command = "fourmolu"
+options = [
+    "--ghc-opt",
+    "-XImportQualifiedPost",
+    "--ghc-opt",
+    "-XTypeApplications",
+    "--mode",
+    "inplace",
+    "--check-idempotence",
+]
+includes = ["*.hs"]
+
 [formatter.nix]
-command = "nixfmt"
+command = "nixpkgs-fmt"
 includes = ["*.nix"]
 
-[formatter.haskell]
-command = "ormolu"
-options = ["--mode", "inplace"]
-includes = ["*.hs"]
+[formatter.cabal]
+command = "cabal-fmt"
+options = ["--inplace"]
+includes = ["*.cabal"]

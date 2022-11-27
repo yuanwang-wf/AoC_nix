@@ -22,7 +22,7 @@ decodeCol :: String -> String
 decodeCol = map (\c -> if c == 'L' then '0' else '1')
 
 seatId :: String -> Maybe SeatId
-seatId content = liftA2 (+) (fmap (* 8) . readBin . decodeRow $row) (readBin . decodeCol $ column)
+seatId content = liftA2 (+) (fmap (* 8) . readBin . decodeRow $ row) (readBin . decodeCol $ column)
   where
     (row, column) = splitAt 7 content
 
@@ -39,10 +39,10 @@ findSeat input = head d
 
 partI :: IO SeatId
 partI = do
-  content <- readFile "/data/2020/day5.txt"
-  return . maxSeat . lines $ content
+    content <- readFile "/data/2020/day5.txt"
+    return . maxSeat . lines $ content
 
 partII :: IO SeatId
 partII = do
-  content <- readFile "data/2020/day5.txt"
-  return . findSeat . lines $ content
+    content <- readFile "data/2020/day5.txt"
+    return . findSeat . lines $ content

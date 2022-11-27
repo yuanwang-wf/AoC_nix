@@ -5,7 +5,7 @@ import Control.Monad (join)
 import Data.Array (Array, array, elems, (!), (//))
 import Data.Bits (Bits (xor))
 import Data.List.Split (splitOn)
-import qualified Data.Map.Strict as Map
+import Data.Map.Strict qualified as Map
 
 type Point = (Int, Int)
 
@@ -28,17 +28,17 @@ updateGrid grid (a, b) (a', b') = grid // [((i, j), 1 + (grid ! (i, j))) | i <- 
 
 testVent :: [Vent]
 testVent =
-  [ ((0, 9), (5, 9)),
-    ((8, 0), (0, 8)),
-    ((9, 4), (3, 4)),
-    ((2, 2), (2, 1)),
-    ((7, 0), (7, 4)),
-    ((6, 4), (2, 0)),
-    ((0, 9), (2, 9)),
-    ((3, 4), (1, 4)),
-    ((0, 0), (8, 8)),
-    ((5, 5), (8, 2))
-  ]
+    [ ((0, 9), (5, 9))
+    , ((8, 0), (0, 8))
+    , ((9, 4), (3, 4))
+    , ((2, 2), (2, 1))
+    , ((7, 0), (7, 4))
+    , ((6, 4), (2, 0))
+    , ((0, 9), (2, 9))
+    , ((3, 4), (1, 4))
+    , ((0, 0), (8, 8))
+    , ((5, 5), (8, 2))
+    ]
 
 partI :: [Vent] -> Int
 partI = length . filter (>= 2) . elems . foldr (f . _sort) grid . _filter

@@ -30,10 +30,10 @@ helper grid pos s acum = if reachTheEnd pos grid then acum else helper grid pos'
 
 test :: IO ()
 test = do
-  content <- readFile "data/2020/day3.txt"
-  print (counterTree (parseGrid content) (3, 1))
+    content <- readFile "data/2020/day3.txt"
+    print (counterTree (parseGrid content) (3, 1))
 
 test' :: IO ()
 test' = do
-  content <- readFile "data/day3.txt"
-  print $ product (map (counterTree (parseGrid content)) [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)])
+    content <- readFile "data/day3.txt"
+    print $ product (map (counterTree (parseGrid content)) [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)])
