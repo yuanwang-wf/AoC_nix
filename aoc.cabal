@@ -23,7 +23,7 @@ data-files:
   data/2021/day8.txt
   data/2021/day9-test.txt
   data/2021/day9.txt
-
+  data/2022/day1.txt
 -- extra-source-files:
 --   LICENSE
 --   README.md
@@ -94,7 +94,9 @@ common shared
 
   hs-source-dirs:     src
   default-language:   Haskell2010
-  other-modules:      Y2021.Day1
+  other-modules:
+   Y2021.Day1
+   Y2022.Day1
 
 -- Y2021.Day10
 -- Y2021.Day11
