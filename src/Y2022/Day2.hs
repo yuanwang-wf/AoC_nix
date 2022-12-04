@@ -3,7 +3,7 @@
 module Y2022.Day2 (score, Move (..), Round (..), partI, predicate, partII) where
 
 import Control.Applicative (liftA2)
-import Data.Maybe (catMaybes , mapMaybe)
+import Data.Maybe (catMaybes, mapMaybe)
 
 data Move = Rock | Paper | Scissors deriving (Eq, Read, Show, Enum, Bounded)
 
@@ -19,7 +19,7 @@ outcome us them
     | otherwise = Lose
 
 outcome' :: Move -> Move -> Outcome
-outcome' mine their =  toEnum ( (fromEnum mine - fromEnum their + 1) `mod` 3)
+outcome' mine their = toEnum ((fromEnum mine - fromEnum their + 1) `mod` 3)
 
 data Round = Round {getElf :: Move, getMine :: Move}
 
@@ -63,7 +63,7 @@ readRound' input = liftA2 Round' (readMove e) (readOutcome m)
 
 -- X means you need to lose, Y means you need to end the round in a draw, and Z means you need to win
 readInput :: FilePath -> IO [Round]
-readInput path =  mapMaybe readRound . lines <$> readFile path
+readInput path = mapMaybe readRound . lines <$> readFile path
 
 readOutcome :: String -> Maybe Outcome
 readOutcome "X" = Just Lose
@@ -71,18 +71,19 @@ readOutcome "Y" = Just Tie
 readOutcome "Z" = Just Win
 readOutcome _ = Nothing
 
-data Round' = Round' {getTheir :: Move, getOutcome :: Outcome }
+data Round' = Round' {getTheir :: Move, getOutcome :: Outcome}
 
 predicate :: Move -> Outcome -> Move
-predicate their o = toEnum (  (fromEnum o + fromEnum their - 1) `mod` 3)
+predicate their o = toEnum ((fromEnum o + fromEnum their - 1) `mod` 3)
 
 score' :: Round' -> Int
-score' r = (fromEnum m + 1  ) + (fromEnum o * 3)
-  where o = getOutcome r
-        m = predicate (getTheir r) (getOutcome r)
+score' r = (fromEnum m + 1) + (fromEnum o * 3)
+  where
+    o = getOutcome r
+    m = predicate (getTheir r) (getOutcome r)
 
 partI :: IO Int
 partI = sum . map score <$> readInput "data/2022/day2.txt"
 
 partII :: IO Int
-partII = sum . map  score' . mapMaybe readRound' . lines  <$> readFile "data/2022/day2.txt"
+partII = sum . map score' . mapMaybe readRound' . lines <$> readFile "data/2022/day2.txt"
