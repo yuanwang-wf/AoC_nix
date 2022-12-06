@@ -74,6 +74,7 @@ common shared
     , bytestring
     , containers
     , mtl
+    , safe
     , split
     , text
     , vector
@@ -86,6 +87,7 @@ common shared
     Y2022.Day2
     Y2022.Day3
     Y2022.Day4
+    Y2022.Day5
 
 -- Y2021.Day10
 -- Y2021.Day11
