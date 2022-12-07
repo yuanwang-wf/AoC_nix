@@ -14,12 +14,6 @@ type Stack = [Crate]
 type Stacks = [Stack]
 data Procedure = Procedure Int Int Int deriving (Show)
 
-testInput :: String
-testInput = unsafePerformIO (readFile "data/2022/day5.txt")
-
-testStack :: Stacks
-testStack = parseStack . splitStack $ testInput
-
 splitStack :: String -> String
 splitStack = head . splitOn "\n\n"
 
@@ -40,9 +34,10 @@ parseStack = snd . foldr parse' ([], []) . lines
         row = [lookUp input index | index <- indices]
 
         lookUp :: String -> Int -> Maybe Crate
-        lookUp x i = if (i < length x) then Just (x !! i) >>= (\a -> if isSpace a then Nothing else Just a) else Nothing
+        lookUp x i = if i < length x then Just (x !! i) >>= (\a -> if isSpace a then Nothing else Just a) else Nothing
 
-        newRows = map (\(x, y) -> maybe y (: y) x) (zip row rows)
+        -- newRows = map (\(x, y) -> maybe y (: y) x) (zip row rows)
+        newRows = zipWith (\x y -> maybe y (: y) x) row rows
 
 procedureParse :: Parser Procedure
 procedureParse = do

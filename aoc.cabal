@@ -73,6 +73,7 @@ common shared
     , base        >=4 && <5
     , bytestring
     , containers
+    , microlens
     , mtl
     , safe
     , split

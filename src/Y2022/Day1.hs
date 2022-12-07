@@ -2,7 +2,7 @@ module Y2022.Day1 (partI, partII) where
 
 import Data.List (sortOn)
 import Data.List.Split (splitOn)
-import Data.Maybe (fromJust, isJust)
+import Data.Maybe (catMaybes, fromJust, isJust)
 import Data.Ord (Down (Down))
 import Data.Semigroup (Max (Max))
 
@@ -40,7 +40,7 @@ getThird three = x
     (_, _, x) = getTopThree three
 
 toList :: TopThree n -> [n]
-toList t = (map fromJust . filter isJust) [getFirst t, getSec t, getThird t]
+toList t = catMaybes [getFirst t, getSec t, getThird t]
 
 appendTopThree :: (Ord n, Num n) => TopThree n -> TopThree n -> TopThree n
 appendTopThree l r = case nums of

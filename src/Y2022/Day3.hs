@@ -25,23 +25,23 @@ split input = splitAt a input
 
 shareItems :: (Rucksack, Rucksack) -> Rucksack
 -- shareItems (first, sec) = [ i | i <- first,  i `elem` sec ]
-shareItems (f, s) = foldr (\x y -> if (x `elem` s && not (x `elem` y)) then (x : y) else y) "" f
+shareItems (f, s) = foldr (\x y -> if x `elem` s && notElem x y then x : y else y) "" f
 solution1 :: String -> Int
-solution1 input = foldr (\x y -> (fromMaybe 0 (Map.lookup x priorityMap)) + y) 0 . concat . map (shareItems . split) . lines $ input
+solution1 = foldr (\x y -> fromMaybe 0 (Map.lookup x priorityMap) + y) 0 . concatMap (shareItems . split) . lines
 
 splitPart2 :: [String] -> [(Rucksack, Rucksack, Rucksack)]
 splitPart2 input = case splitAt 3 input of
-    (x, []) -> f x : []
-    (x, y) -> (f x) : splitPart2 y
+    (x, []) -> [f x]
+    (x, y) -> f x : splitPart2 y
   where
     f :: [String] -> (Rucksack, Rucksack, Rucksack)
     f i = (head i, i !! 1, i !! 2)
 
 shareItems' :: (Rucksack, Rucksack, Rucksack) -> Rucksack
-shareItems' (f, s, t) = foldr (\x y -> if (x `elem` s && x `elem` t && not (x `elem` y)) then (x : y) else y) "" f
+shareItems' (f, s, t) = foldr (\x y -> if x `elem` s && x `elem` t && notElem x y then x : y else y) "" f
 
 solution2 :: String -> Int
-solution2 input = sum . map (foldr (\x y -> (fromMaybe 0 (Map.lookup x priorityMap)) + y) 0) . map shareItems' . splitPart2 . lines $ input
+solution2 = sum . map foldr (\x y -> fromMaybe 0 (Map.lookup x priorityMap) + y) 0 . map shareItems' . splitPart2 . lines
 
 partI :: IO Int
 partI = solution1 <$> readFile "data/2022/day3.txt"

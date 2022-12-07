@@ -3,7 +3,7 @@
 module Y2022.Day2 (score, Move (..), Round (..), partI, predicate, partII) where
 
 import Control.Applicative (liftA2)
-import Data.Maybe (catMaybes, mapMaybe)
+import Data.Maybe (mapMaybe)
 
 data Move = Rock | Paper | Scissors deriving (Eq, Read, Show, Enum, Bounded)
 
@@ -26,7 +26,7 @@ data Round = Round {getElf :: Move, getMine :: Move}
 score :: Round -> Int
 score run = o + shape
   where
-    o = case (outcome' (getMine run) (getElf run)) of
+    o = case outcome' (getMine run) (getElf run) of
         Win -> 6
         Lose -> 0
         Tie -> 3
