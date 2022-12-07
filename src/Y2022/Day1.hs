@@ -2,7 +2,7 @@ module Y2022.Day1 (partI, partII) where
 
 import Data.List (sortOn)
 import Data.List.Split (splitOn)
-import Data.Maybe (catMaybes, fromJust, isJust)
+import Data.Maybe (catMaybes)
 import Data.Ord (Down (Down))
 import Data.Semigroup (Max (Max))
 
