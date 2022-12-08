@@ -55,8 +55,8 @@ procedureParse = do
     to <- count 1 digit
     return $ Procedure (read count') (read from) (read to)
 
-logParser :: Parser [Procedure]
-logParser = many $ procedureParse <* endOfLine
+proceduresParser :: Parser [Procedure]
+proceduresParser = many $ procedureParse <* endOfLine
 
 test :: IO ()
 test = do
@@ -72,7 +72,7 @@ solution :: (Stacks -> Procedure -> Stacks) -> IO ()
 solution fn = do
     input <- readFile "data/2022/day5.txt"
     let stack = parseStack (head . splitOn "\n\n" $ input)
-        procedures = fromRight [] $ parseOnly logParser (T.pack . last . splitOn "\n\n" $ input)
+        procedures = fromRight [] $ parseOnly proceduresParser (T.pack . last . splitOn "\n\n" $ input)
     -- print stack
     -- print procedures
     -- print $ foldl move stack procedures
