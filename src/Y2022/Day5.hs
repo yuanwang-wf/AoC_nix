@@ -3,12 +3,12 @@
 module Y2022.Day5 (partI, partII) where
 
 import Control.Applicative (many, (<|>))
+import Control.Lens (element, (&), (.~))
 import Data.Attoparsec.Text hiding (take)
 import Data.Char (isSpace)
 import Data.Either (fromRight)
 import Data.List.Split (splitOn)
 import Data.Text qualified as T
-import Control.Lens (element, (.~ ), (&))
 
 type Crate = Char
 type Stack = [Crate]
@@ -84,18 +84,19 @@ partI = solution move
 partII :: IO ()
 partII = solution move'
 
-
-move :: Stacks -> Procedure ->  Stacks
-move stacks (Procedure 0 _ _ )  = stacks
-move stacks (Procedure n f t)  = move (stacks  & element (f - 1)  .~ newFrom & element (t -1).~ newTo) (Procedure (n-1) f t)
-  where from = stacks !! (f -1)
-        to = stacks !! (t -1)
-        newFrom = tail from
-        newTo = head from : to
+move :: Stacks -> Procedure -> Stacks
+move stacks (Procedure 0 _ _) = stacks
+move stacks (Procedure n f t) = move (stacks & element (f - 1) .~ newFrom & element (t - 1) .~ newTo) (Procedure (n - 1) f t)
+  where
+    from = stacks !! (f - 1)
+    to = stacks !! (t - 1)
+    newFrom = tail from
+    newTo = head from : to
 
 move' :: Stacks -> Procedure -> Stacks
-move' stacks (Procedure n f t)  = stacks  & element (f - 1)  .~ newFrom & element (t -1).~ newTo
-  where from = stacks !! (f -1)
-        to = stacks !! (t -1)
-        newFrom = drop n from
-        newTo = take n from ++ to
+move' stacks (Procedure n f t) = stacks & element (f - 1) .~ newFrom & element (t - 1) .~ newTo
+  where
+    from = stacks !! (f - 1)
+    to = stacks !! (t - 1)
+    newFrom = drop n from
+    newTo = take n from ++ to
