@@ -62,7 +62,7 @@ test :: IO ()
 test = do
     input <- readFile "data/2022/day5.txt"
     let stack = parseStack (head . splitOn "\n\n" $ input)
-        procedures = fromRight [] $ parseOnly logParser (T.pack . last . splitOn "\n\n" $ input)
+        procedures = fromRight [] $ parseOnly proceduresParser (T.pack . last . splitOn "\n\n" $ input)
     -- print stack
     -- print procedures
     -- print $ foldl move stack procedures
