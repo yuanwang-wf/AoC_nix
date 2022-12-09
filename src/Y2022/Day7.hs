@@ -4,14 +4,18 @@ module Y2022.Day7 where
 import Data.Attoparsec.Text hiding (take)
 import Data.Text qualified as T
 import Control.Applicative (many, (<|>))
-data FileSystem = Directory {   _dName :: String, _content :: [FileSystem], _parent :: Maybe FileSystem } | File { _fName :: String , _size :: Int }
+data FileSystem = Directory {   _dName :: String, _content :: [FileSystem] } | File { _fName :: String , _size :: Int }
 
 getSize :: FileSystem -> Int
 getSize (File _ s ) = s
 getSize (Directory _ [] _ ) = 0
-getSize (Directory n (x:xs) p ) = getSize x + getSize (Directory n xs p )
+getSize (Directory n (x:xs)  ) = getSize x + getSize (Directory n xs  )
 
 data Output = CD String | LS | Dir String | FL Int String deriving Show
+data Zipper = Zipper [FileSystem] [FileSystem]
+
+empty :: Zipper
+empty = Zipper [] []
 
 parserFile :: Parser Output
 parserFile = do
@@ -43,5 +47,10 @@ test = do
     -- print $ parseOnly outputParser "101350 gpbswq.njr"
     -- print $ parseOnly outputParser "270744 mglrchsr"
 
-buildTree :: [Output] -> FileSystem -> FileSystem
-buildTree = undefined
+-- zipper left maybe directory ,
+buildTree :: Zipper ->  Output -> Zipper
+buildTree (Zipper [] []) (CD n) = Zipper [Directory n [] ] []
+buildTree z LS = z
+buildTree (Zipper dirs items) (Dir n) = Zipper dirs (Directory n []  : items )
+buildTree (Zipper dirs items) (FL s n) = Zipper dirs (File n s  : items )
+buildTree (Zipper (Directory n' item' :xs) items) (CD n) =
