@@ -1,0 +1,144 @@
+cabal-version: 2.4
+name:          aoc
+version:       0.0.0.1
+license:       MIT
+copyright:     2022 Yuan Wang
+maintainer:    me@yuanwang.ca
+author:        Yuan Wang
+build-type:    Simple
+data-files:
+  data/2021/*.txt
+  data/2022/*.txt
+
+-- extra-source-files:
+--   LICENSE
+--   README.md
+
+common shared
+  ghc-options:
+    -Wall -Wincomplete-record-updates -Wincomplete-uni-patterns
+    -Wmissing-deriving-strategies -Wunused-foralls -Wunused-foralls
+    -fprint-explicit-foralls -fprint-explicit-kinds
+    -Wno-unticked-promoted-constructors
+
+  -- mixins:
+  --   base hiding (Prelude),
+  --   relude (Relude as Prelude, Relude.Container.One),
+  --   relude
+
+  default-extensions:
+    NoStarIsType
+    BangPatterns
+    ConstraintKinds
+    DataKinds
+    DeriveDataTypeable
+    DeriveFoldable
+    DeriveFunctor
+    DeriveGeneric
+    DeriveLift
+    DeriveTraversable
+    DerivingStrategies
+    DerivingVia
+    EmptyCase
+    EmptyDataDecls
+    EmptyDataDeriving
+    ExistentialQuantification
+    ExplicitForAll
+    FlexibleContexts
+    FlexibleInstances
+    GADTSyntax
+    GeneralisedNewtypeDeriving
+    ImportQualifiedPost
+    KindSignatures
+    LambdaCase
+    MultiParamTypeClasses
+    MultiWayIf
+    NumericUnderscores
+    OverloadedStrings
+    PolyKinds
+    PostfixOperators
+    RankNTypes
+    ScopedTypeVariables
+    StandaloneDeriving
+    StandaloneKindSignatures
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
+    ViewPatterns
+
+  build-depends:
+    , array
+    , attoparsec
+    , base        >=4 && <5
+    , bytestring
+    , containers
+    , lens
+    , mtl
+    , safe
+    , split
+    , text
+    , vector
+
+  hs-source-dirs:     src
+  default-language:   Haskell2010
+  other-modules:
+    Y2021.Day1
+    Y2022.Day1
+    Y2022.Day2
+    Y2022.Day3
+    Y2022.Day4
+    Y2022.Day5
+    Y2022.Day6
+    Y2022.Day7
+
+-- Y2021.Day10
+-- Y2021.Day11
+-- Y2021.Day12
+-- Y2021.Day2
+-- Y2021.Day3
+-- Y2021.Day4
+-- Y2021.Day5
+-- Y2021.Day6
+-- Y2021.Day7
+-- Y2021.Day8
+-- Y2021.Day9
+
+common test-deps
+  build-depends: hspec
+
+library
+  import:         shared
+  hs-source-dirs: src
+
+executable aoc-executable
+  import:  shared
+  main-is: Main.hs
+
+-- test-suite aoc-test
+--   type:           exitcode-stdio-1.0
+--   import:         shared, test-deps
+--   main-is:        Spec.hs
+--   other-modules:
+--     Y2021.Day11Spec
+--     Y2021.Day8Spec
+
+--   hs-source-dirs: test
+
+-- ghc-options:        -threaded -rtsopts -with-rtsopts=-N
+-- build-depends:
+--   , aoc
+--   , array
+--   , attoparsec
+--   , base        >=4 && <5
+--   , bytestring
+--   , containers
+--   , hspec
+--   , mtl
+--   , QuickCheck
+--   , split
+--   , text
+--   , vector
+
+-- default-language:   Haskell2010
+-- build-tool-depends: hspec-discover:hspec-discover

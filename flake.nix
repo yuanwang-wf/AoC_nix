@@ -1,56 +1,44 @@
 {
-  description = "virtual environments";
-
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-  inputs.devshell.url = "github:numtide/devshell";
-  inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.gitignore = {
-    url = "github:hercules-ci/gitignore.nix";
-    # Use the same nixpkgs
-    inputs.nixpkgs.follows = "nixpkgs";
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    haskell-flake.url = "github:srid/haskell-flake";
+    treefmt-flake.url = "github:srid/treefmt-flake";
+    check-flake.url = "github:srid/check-flake";
   };
-  outputs = { self, nixpkgs, devshell, flake-utils, gitignore }:
-
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [
-            devshell.overlay
-            (final: prev: {
-              haskellPackages = prev.haskellPackages.override {
-                overrides = hself: hsuper: {
-                  aoc = hself.callCabal2nix "aoc"
-                    (gitignore.lib.gitignoreSource ./.) { };
-                };
-              };
-              aoc = final.haskell.lib.justStaticExecutables
-                final.haskellPackages.aoc;
-            })
-          ];
+  outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit self; } {
+      systems = nixpkgs.lib.systems.flakeExposed;
+      imports = [
+        inputs.haskell-flake.flakeModule
+        inputs.treefmt-flake.flakeModule
+        inputs.check-flake.flakeModule
+      ];
+      perSystem = { self', config, pkgs, ... }: {
+        haskellProjects.default = {
+          packages = {
+            # You can add more than one local package here.
+            aoc.root = ./.; # Assumes ./my-package.cabal
+          };
+          buildTools = hp: {
+            inherit (pkgs)
+              treefmt;
+            inherit (hp)
+              implicit-hie;
+          } // config.treefmt.formatters;
+          # overrides = self: super: { };
+          hlintCheck.enable = true;
+          hlsCheck.enable = true;
         };
-        myHaskellEnv = (pkgs.haskellPackages.ghcWithHoogle
-          (p: with p; [ aoc cabal-install hlint hpack brittany ]));
-
-      in {
-        packages = { haskell-hello = pkgs.haskell-hello; };
-        defaultPackage = pkgs.aoc;
-        checks = self.packages;
-        devShell = pkgs.devshell.mkShell {
-          name = "AdventofCode";
-          imports = [ (pkgs.devshell.extraModulesDir + "/git/hooks.nix") ];
-          git.hooks.enable = true;
-          git.hooks.pre-commit.text = ''
-            unset GIT_LITERAL_PATHSPECS
-            ${pkgs.treefmt}/bin/treefmt
-          '';
-          packages = [
-            myHaskellEnv
-
-            pkgs.ormolu
-            pkgs.treefmt
-            pkgs.nixfmt
-          ];
+        treefmt.formatters = {
+          inherit (pkgs)
+            nixpkgs-fmt;
+          inherit (pkgs.haskellPackages)
+            cabal-fmt
+            fourmolu;
         };
-      });
+        # haskell-flake doesn't set the default package, but you can do it here.
+        packages.default = self'.packages.aoc;
+      };
+    };
 }
